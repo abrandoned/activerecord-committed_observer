@@ -18,7 +18,23 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+  Make sure you include CommittedObserver in any of the Observers you 
+  want to hook after_commit methods on
+
+```ruby
+  class BigObserver < ::ActiveRecord::Observer
+    include ::ActiveRecord::CommittedObserver
+
+    def after_commit_on_create(big)
+      # do some things and stuff
+    end
+
+    def after_commit_on_update(big)
+      # Check `previous_changes` because it is after_commit!
+    end
+
+  end
+```
 
 ## Contributing
 
