@@ -41,13 +41,26 @@ module ActiveRecord
     def after_commit(model)
       after_commit_on_commit(model) if respond_to?(:after_commit_on_commit)
 
-      case
-      when model.__send__(:transaction_include_action?, :create) then
-        after_commit_on_create(model) if respond_to?(:after_commit_on_create)
-      when model.__send__(:transaction_include_action?, :update) then
-        after_commit_on_update(model) if respond_to?(:after_commit_on_update)
-      when model.__send__(:transaction_include_action?, :destroy) then
-        after_commit_on_destroy(model) if respond_to?(:after_commit_on_destroy)
+      if model.respond_to?(:transaction_include_any_action?, true)
+        # Rails 4
+        case
+        when model.__send__(:transaction_include_any_action?, [:create]) then
+          after_commit_on_create(model) if respond_to?(:after_commit_on_create)
+        when model.__send__(:transaction_include_any_action?, [:update]) then
+          after_commit_on_update(model) if respond_to?(:after_commit_on_update)
+        when model.__send__(:transaction_include_any_action?, [:destroy]) then
+          after_commit_on_destroy(model) if respond_to?(:after_commit_on_destroy)
+        end
+      else
+        # Rails 3
+        case
+        when model.__send__(:transaction_include_action?, :create) then
+          after_commit_on_create(model) if respond_to?(:after_commit_on_create)
+        when model.__send__(:transaction_include_action?, :update) then
+          after_commit_on_update(model) if respond_to?(:after_commit_on_update)
+        when model.__send__(:transaction_include_action?, :destroy) then
+          after_commit_on_destroy(model) if respond_to?(:after_commit_on_destroy)
+        end
       end
     end
 
